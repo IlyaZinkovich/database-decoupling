@@ -1,0 +1,4 @@
+CREATE TABLE `records` (
+  `id` BIGINT NOT NULL PRIMARY KEY,
+  `data` VARCHAR(100) NOT NULL
+);
