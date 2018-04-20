@@ -14,8 +14,7 @@ class Record {
     this.data = data;
   }
 
-
-  public Map<String, Object> toMap() {
+  Map<String, Object> toMap() {
     return ImmutableMap.<String, Object>builder()
         .put("id", id)
         .put("data", data)

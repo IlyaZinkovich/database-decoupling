@@ -13,7 +13,13 @@ import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.config.MysqldConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import javax.cache.configuration.FactoryBuilder;
 import javax.sql.DataSource;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.configuration.IgniteConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -76,5 +82,20 @@ class CoupledModuleIntegrationTest {
     jdbcConfig.setUsername("user");
     jdbcConfig.setPassword("pass");
     return new HikariDataSource(jdbcConfig);
+  }
+
+  @Test
+  void testDataGridBackedWithDatabase() {
+    IgniteConfiguration igniteConfiguration = new IgniteConfiguration();
+    CacheConfiguration<Long, Record> cacheCfg = new CacheConfiguration<>();
+    cacheCfg.setName("records");
+    cacheCfg.setCacheWriterFactory(FactoryBuilder.factoryOf(RecordCacheWriter.class));
+    cacheCfg.setWriteThrough(true);
+    cacheCfg.setWriteBehindEnabled(true);
+    igniteConfiguration.setCacheConfiguration(cacheCfg);
+    try (final Ignite ignite = Ignition.start(igniteConfiguration)) {
+      final IgniteCache<Long, Record> recordsCache = ignite.cache("records");
+
+    }
   }
 }
